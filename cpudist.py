@@ -220,7 +220,7 @@ if args.pids or args.tids:
 else:
     section = ""
     storage_str += "BPF_HISTOGRAM(dist);"
-    store_str += "dist.atomic_increment(bpf_log2l(delta));"
+    store_str += "dist.increment(bpf_log2l(delta));"
 
 if args.extension:
     storage_str += "BPF_ARRAY(extension, ext_val_t, 1);"
