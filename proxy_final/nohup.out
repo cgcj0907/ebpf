@@ -1,0 +1,692 @@
+warning: unused import: `regex::Regex`
+  --> src/main.rs:10:5
+   |
+10 | use regex::Regex;
+   |     ^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `Object`
+  --> src/main.rs:12:41
+   |
+12 | use deadpool::{managed::{Pool, Manager, Object, RecycleError, ...
+   |                                         ^^^^^^
+
+warning: unused import: `deadpool::managed::PoolConfig`
+  --> src/main.rs:15:5
+   |
+15 | use deadpool::managed::PoolConfig;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:174:13
+    |
+174 |     let mut state = ConnectionState::NewConnection;
+    |             ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` on by default
+
+warning: value assigned to `is_websocket` is never read
+   --> src/main.rs:175:13
+    |
+175 |     let mut is_websocket = false;
+    |             ^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `header_len`
+   --> src/main.rs:199:25
+    |
+199 |                     let header_len = header_end_pos + 4;
+    |                         ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_header_len`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:212:21
+    |
+212 | ...   state = ConnectionState::ConnectingToBackend;
+    |       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:236:21
+    |
+236 | ...   state = ConnectionState::WritingRequestHeader;
+    |       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:243:21
+    |
+243 | ...   state = ConnectionState::ReadingResponseHeader;
+    |       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:248:25
+    |
+248 |                         state = ConnectionState::Tunneling;
+    |                         ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:299:29
+    |
+299 | ...   state = ConnectionState::ForwardingResponse;
+    |       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `sigint`
+   --> src/main.rs:358:13
+    |
+358 |     let mut sigint = signal::ctrl_c();
+    |             ^^^^^^ help: if this is intentional, prefix it with an underscore: `_sigint`
+
+warning: variable does not need to be mutable
+   --> src/main.rs:358:9
+    |
+358 |     let mut sigint = signal::ctrl_c();
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variant `WritingResponseHeader` is never constructed
+  --> src/main.rs:31:5
+   |
+26 | enum ConnectionState {
+   |      --------------- variant in this enum
+...
+31 |     WritingResponseHeader,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `ConnectionState` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` on by default
+
+warning: `proxy_final` (bin "proxy_final") generated 14 warnings (run `cargo fix --bin "proxy_final"` to apply 4 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running `target/debug/proxy_final`
+读取配置文件: config.conf
+代理监听地址: 0.0.0.0:8080
+后端服务器: 127.0.0.1:8000
+Backend TCP Pool initialized (Max: 10, Min idle: 2).
+Proxy listening on 0.0.0.0:8080
+[127.0.0.1:59443] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59444] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59445] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59446] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59447] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59448] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59449] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59451] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59452] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59450] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59453] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59454] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59455] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59456] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59457] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59458] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59459] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59460] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59461] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59462] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59463] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59464] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59465] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59466] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59467] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59468] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59469] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59470] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59471] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59474] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59472] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59473] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59475] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59476] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59477] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59479] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59478] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59480] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59481] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59482] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59483] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59485] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59484] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59485] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59486] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59487] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59489] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59488] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59490] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59491] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59493] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59492] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59494] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59495] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59497] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59496] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59498] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59499] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59500] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59501] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59502] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59503] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59504] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59505] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59506] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59507] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59508] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59509] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59510] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59511] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59512] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59513] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59514] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59515] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59516] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59517] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59518] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59519] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59521] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59522] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59520] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59523] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59524] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59525] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59526] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59527] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59528] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59529] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59530] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59531] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59532] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59533] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59535] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59536] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59537] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59538] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59539] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59540] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59541] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59542] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59543] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59545] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59544] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59546] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59547] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59548] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59550] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59549] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59551] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59552] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59553] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59554] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59555] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59556] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59557] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59558] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59559] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59560] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59561] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59562] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59564] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59565] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59566] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59563] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59567] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59568] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59569] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59570] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59572] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59571] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59573] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59575] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59574] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59576] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59577] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59578] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59580] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59579] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59582] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59581] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59583] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59584] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59587] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59585] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59586] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59588] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59589] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59590] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59591] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:59592] Failed to get backend connection from pool (deadpool error): Backend(Message("Connection refused (os error 111)"))
+[127.0.0.1:61340] Connection finished. Final State: Closed
+[127.0.0.1:61343] Connection finished. Final State: Closed
+[127.0.0.1:61341] Connection finished. Final State: Closed
+[127.0.0.1:61344] Connection finished. Final State: Closed
+[127.0.0.1:61342] Connection finished. Final State: Closed
+[127.0.0.1:61346] Connection finished. Final State: Closed
+[127.0.0.1:61347] Connection finished. Final State: Closed
+[127.0.0.1:61349] Connection finished. Final State: Closed
+[127.0.0.1:61350] Connection finished. Final State: Closed
+[127.0.0.1:61351] Connection finished. Final State: Closed
+[127.0.0.1:61352] Connection finished. Final State: Closed
+[127.0.0.1:61353] Connection finished. Final State: Closed
+[127.0.0.1:61355] Connection finished. Final State: Closed
+[127.0.0.1:61360] Connection finished. Final State: Closed
+[127.0.0.1:61358] Connection finished. Final State: Closed
+[127.0.0.1:61357] Connection finished. Final State: Closed
+[127.0.0.1:61356] Connection finished. Final State: Closed
+[127.0.0.1:61362] Connection finished. Final State: Closed
+[127.0.0.1:61365] Connection finished. Final State: Closed
+[127.0.0.1:61367] Connection finished. Final State: Closed
+[127.0.0.1:61369] Connection finished. Final State: Closed
+[127.0.0.1:61370] Connection finished. Final State: Closed
+[127.0.0.1:61368] Connection finished. Final State: Closed
+[127.0.0.1:61371] Connection finished. Final State: Closed
+[127.0.0.1:61373] Connection finished. Final State: Closed
+[127.0.0.1:61376] Connection finished. Final State: Closed
+[127.0.0.1:61377] Connection finished. Final State: Closed
+[127.0.0.1:61375] Connection finished. Final State: Closed
+[127.0.0.1:61381] Connection finished. Final State: Closed
+[127.0.0.1:61380] Connection finished. Final State: Closed
+[127.0.0.1:61379] Connection finished. Final State: Closed
+[127.0.0.1:61384] Connection finished. Final State: Closed
+[127.0.0.1:61383] Connection finished. Final State: Closed
+[127.0.0.1:61385] Connection finished. Final State: Closed
+[127.0.0.1:61389] Connection finished. Final State: Closed
+[127.0.0.1:61388] Connection finished. Final State: Closed
+[127.0.0.1:61390] Connection finished. Final State: Closed
+[127.0.0.1:61392] Connection finished. Final State: Closed
+[127.0.0.1:61393] Connection finished. Final State: Closed
+[127.0.0.1:61394] Connection finished. Final State: Closed
+[127.0.0.1:61399] Connection finished. Final State: Closed
+[127.0.0.1:61396] Connection finished. Final State: Closed
+[127.0.0.1:61398] Connection finished. Final State: Closed
+[127.0.0.1:61403] Connection finished. Final State: Closed
+[127.0.0.1:61401] Connection finished. Final State: Closed
+[127.0.0.1:61402] Connection finished. Final State: Closed
+[127.0.0.1:61406] Connection finished. Final State: Closed
+[127.0.0.1:61405] Connection finished. Final State: Closed
+[127.0.0.1:61407] Connection finished. Final State: Closed
+[127.0.0.1:61411] Connection finished. Final State: Closed
+[127.0.0.1:61415] Connection finished. Final State: Closed
+[127.0.0.1:61410] Connection finished. Final State: Closed
+[127.0.0.1:61414] Connection finished. Final State: Closed
+[127.0.0.1:61409] Connection finished. Final State: Closed
+[127.0.0.1:61417] Connection finished. Final State: Closed
+[127.0.0.1:61421] Connection finished. Final State: Closed
+[127.0.0.1:61425] Connection finished. Final State: Closed
+[127.0.0.1:61423] Connection finished. Final State: Closed
+[127.0.0.1:61419] Connection finished. Final State: Closed
+[127.0.0.1:61429] Connection finished. Final State: Closed
+[127.0.0.1:61436] Connection finished. Final State: Closed
+[127.0.0.1:61432] Connection finished. Final State: Closed
+[127.0.0.1:61427] Connection finished. Final State: Closed
+[127.0.0.1:61434] Connection finished. Final State: Closed
+[127.0.0.1:61438] Connection finished. Final State: Closed
+[127.0.0.1:61440] Connection finished. Final State: Closed
+[127.0.0.1:61442] Connection finished. Final State: Closed
+[127.0.0.1:61446] Connection finished. Final State: Closed
+[127.0.0.1:61448] Connection finished. Final State: Closed
+[127.0.0.1:61462] Connection finished. Final State: Closed
+[127.0.0.1:61460] Connection finished. Final State: Closed
+[127.0.0.1:61458] Connection finished. Final State: Closed
+[127.0.0.1:61450] Connection finished. Final State: Closed
+[127.0.0.1:61456] Connection finished. Final State: Closed
+[127.0.0.1:61470] Connection finished. Final State: Closed
+[127.0.0.1:61474] Connection finished. Final State: Closed
+[127.0.0.1:61468] Connection finished. Final State: Closed
+[127.0.0.1:61466] Connection finished. Final State: Closed
+[127.0.0.1:61464] Connection finished. Final State: Closed
+[127.0.0.1:61478] Connection finished. Final State: Closed
+[127.0.0.1:61484] Connection finished. Final State: Closed
+[127.0.0.1:61482] Connection finished. Final State: Closed
+[127.0.0.1:61488] Connection finished. Final State: Closed
+[127.0.0.1:61486] Connection finished. Final State: Closed
+[127.0.0.1:61494] Connection finished. Final State: Closed
+[127.0.0.1:61492] Connection finished. Final State: Closed
+[127.0.0.1:61490] Connection finished. Final State: Closed
+[127.0.0.1:61496] Connection finished. Final State: Closed
+[127.0.0.1:61498] Connection finished. Final State: Closed
+[127.0.0.1:61504] Connection finished. Final State: Closed
+[127.0.0.1:61506] Connection finished. Final State: Closed
+[127.0.0.1:61502] Connection finished. Final State: Closed
+[127.0.0.1:61500] Connection finished. Final State: Closed
+[127.0.0.1:61508] Connection finished. Final State: Closed
+[127.0.0.1:61518] Connection finished. Final State: Closed
+[127.0.0.1:61516] Connection finished. Final State: Closed
+[127.0.0.1:61512] Connection finished. Final State: Closed
+[127.0.0.1:61514] Connection finished. Final State: Closed
+[127.0.0.1:61510] Connection finished. Final State: Closed
+[127.0.0.1:61528] Connection finished. Final State: Closed
+[127.0.0.1:61524] Connection finished. Final State: Closed
+[127.0.0.1:61522] Connection finished. Final State: Closed
+[127.0.0.1:61526] Connection finished. Final State: Closed
+[127.0.0.1:61520] Connection finished. Final State: Closed
+[127.0.0.1:61530] Connection finished. Final State: Closed
+[127.0.0.1:61538] Connection finished. Final State: Closed
+[127.0.0.1:61532] Connection finished. Final State: Closed
+[127.0.0.1:61536] Connection finished. Final State: Closed
+[127.0.0.1:61534] Connection finished. Final State: Closed
+[127.0.0.1:61548] Connection finished. Final State: Closed
+[127.0.0.1:61546] Connection finished. Final State: Closed
+[127.0.0.1:61542] Connection finished. Final State: Closed
+[127.0.0.1:61544] Connection finished. Final State: Closed
+[127.0.0.1:61540] Connection finished. Final State: Closed
+[127.0.0.1:61552] Connection finished. Final State: Closed
+[127.0.0.1:61556] Connection finished. Final State: Closed
+[127.0.0.1:61558] Connection finished. Final State: Closed
+[127.0.0.1:61550] Connection finished. Final State: Closed
+[127.0.0.1:61554] Connection finished. Final State: Closed
+[127.0.0.1:61566] Connection finished. Final State: Closed
+[127.0.0.1:61568] Connection finished. Final State: Closed
+[127.0.0.1:61560] Connection finished. Final State: Closed
+[127.0.0.1:61562] Connection finished. Final State: Closed
+[127.0.0.1:61564] Connection finished. Final State: Closed
+[127.0.0.1:61570] Connection finished. Final State: Closed
+[127.0.0.1:61572] Connection finished. Final State: Closed
+[127.0.0.1:61578] Connection finished. Final State: Closed
+[127.0.0.1:61574] Connection finished. Final State: Closed
+[127.0.0.1:61576] Connection finished. Final State: Closed
+[127.0.0.1:61580] Connection finished. Final State: Closed
+[127.0.0.1:61582] Connection finished. Final State: Closed
+[127.0.0.1:61586] Connection finished. Final State: Closed
+[127.0.0.1:61584] Connection finished. Final State: Closed
+[127.0.0.1:61588] Connection finished. Final State: Closed
+[127.0.0.1:61590] Connection finished. Final State: Closed
+[127.0.0.1:61596] Connection finished. Final State: Closed
+[127.0.0.1:61592] Connection finished. Final State: Closed
+[127.0.0.1:61598] Connection finished. Final State: Closed
+[127.0.0.1:61594] Connection finished. Final State: Closed
+[127.0.0.1:61600] Connection finished. Final State: Closed
+[127.0.0.1:61606] Connection finished. Final State: Closed
+[127.0.0.1:61604] Connection finished. Final State: Closed
+[127.0.0.1:61602] Connection finished. Final State: Closed
+[127.0.0.1:61608] Connection finished. Final State: Closed
+[127.0.0.1:61612] Connection finished. Final State: Closed
+[127.0.0.1:61614] Connection finished. Final State: Closed
+[127.0.0.1:61616] Connection finished. Final State: Closed
+[127.0.0.1:61619] Connection finished. Final State: Closed
+[127.0.0.1:61621] Connection finished. Final State: Closed
+[127.0.0.1:61623] Connection finished. Final State: Closed
+warning: unused import: `regex::Regex`
+  --> src/main.rs:10:5
+   |
+10 | use regex::Regex;
+   |     ^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `Object`
+  --> src/main.rs:12:41
+   |
+12 | use deadpool::{managed::{Pool, Manager, Object, RecycleError, ...
+   |                                         ^^^^^^
+
+warning: unused import: `deadpool::managed::PoolConfig`
+  --> src/main.rs:15:5
+   |
+15 | use deadpool::managed::PoolConfig;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:174:13
+    |
+174 |     let mut state = ConnectionState::NewConnection;
+    |             ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` on by default
+
+warning: value assigned to `is_websocket` is never read
+   --> src/main.rs:175:13
+    |
+175 |     let mut is_websocket = false;
+    |             ^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `header_len`
+   --> src/main.rs:199:25
+    |
+199 |                     let header_len = header_end_pos + 4;
+    |                         ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_header_len`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:212:21
+    |
+212 | ...   state = ConnectionState::ConnectingToBackend;
+    |       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:236:21
+    |
+236 | ...   state = ConnectionState::WritingRequestHeader;
+    |       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:243:21
+    |
+243 | ...   state = ConnectionState::ReadingResponseHeader;
+    |       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:248:25
+    |
+248 |                         state = ConnectionState::Tunneling;
+    |                         ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:299:29
+    |
+299 | ...   state = ConnectionState::ForwardingResponse;
+    |       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `sigint`
+   --> src/main.rs:358:13
+    |
+358 |     let mut sigint = signal::ctrl_c();
+    |             ^^^^^^ help: if this is intentional, prefix it with an underscore: `_sigint`
+
+warning: variable does not need to be mutable
+   --> src/main.rs:358:9
+    |
+358 |     let mut sigint = signal::ctrl_c();
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variant `WritingResponseHeader` is never constructed
+  --> src/main.rs:31:5
+   |
+26 | enum ConnectionState {
+   |      --------------- variant in this enum
+...
+31 |     WritingResponseHeader,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `ConnectionState` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` on by default
+
+warning: `proxy_final` (bin "proxy_final") generated 14 warnings (run `cargo fix --bin "proxy_final"` to apply 4 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running `target/debug/proxy_final`
+读取配置文件: config.conf
+代理监听地址: 0.0.0.0:8080
+后端服务器: 127.0.0.1:8000
+Backend TCP Pool initialized (Max: 10, Min idle: 2).
+Proxy listening on 0.0.0.0:8080
+[127.0.0.1:54992] Connection finished. Final State: Closed
+[127.0.0.1:54991] Connection finished. Final State: Closed
+[127.0.0.1:54990] Connection finished. Final State: Closed
+[127.0.0.1:54989] Connection finished. Final State: Closed
+[127.0.0.1:54988] Connection finished. Final State: Closed
+[127.0.0.1:54993] Connection finished. Final State: Closed
+[127.0.0.1:54995] Connection finished. Final State: Closed
+[127.0.0.1:54996] Connection finished. Final State: Closed
+[127.0.0.1:54998] Connection finished. Final State: Closed
+[127.0.0.1:54997] Connection finished. Final State: Closed
+[127.0.0.1:55001] Connection finished. Final State: Closed
+[127.0.0.1:55002] Connection finished. Final State: Closed
+[127.0.0.1:55000] Connection finished. Final State: Closed
+[127.0.0.1:55006] Connection finished. Final State: Closed
+[127.0.0.1:55005] Connection finished. Final State: Closed
+[127.0.0.1:55008] Connection finished. Final State: Closed
+[127.0.0.1:55009] Connection finished. Final State: Closed
+[127.0.0.1:55011] Connection finished. Final State: Closed
+[127.0.0.1:55012] Connection finished. Final State: Closed
+[127.0.0.1:55014] Connection finished. Final State: Closed
+[127.0.0.1:55013] Connection finished. Final State: Closed
+[127.0.0.1:55015] Connection finished. Final State: Closed
+[127.0.0.1:55020] Connection finished. Final State: Closed
+[127.0.0.1:55017] Connection finished. Final State: Closed
+[127.0.0.1:55018] Connection finished. Final State: Closed
+[127.0.0.1:55019] Connection finished. Final State: Closed
+[127.0.0.1:55024] Connection finished. Final State: Closed
+[127.0.0.1:55025] Connection finished. Final State: Closed
+[127.0.0.1:55023] Connection finished. Final State: Closed
+[127.0.0.1:55030] Connection finished. Final State: Closed
+[127.0.0.1:55028] Connection finished. Final State: Closed
+[127.0.0.1:55027] Connection finished. Final State: Closed
+[127.0.0.1:55031] Connection finished. Final State: Closed
+[127.0.0.1:55032] Connection finished. Final State: Closed
+[127.0.0.1:55036] Connection finished. Final State: Closed
+[127.0.0.1:55035] Connection finished. Final State: Closed
+[127.0.0.1:55038] Connection finished. Final State: Closed
+[127.0.0.1:55037] Connection finished. Final State: Closed
+[127.0.0.1:55034] Connection finished. Final State: Closed
+[127.0.0.1:55040] Connection finished. Final State: Closed
+[127.0.0.1:55043] Connection finished. Final State: Closed
+[127.0.0.1:55044] Connection finished. Final State: Closed
+[127.0.0.1:55045] Connection finished. Final State: Closed
+[127.0.0.1:55046] Connection finished. Final State: Closed
+[127.0.0.1:55047] Connection finished. Final State: Closed
+[127.0.0.1:55049] Connection finished. Final State: Closed
+[127.0.0.1:55050] Connection finished. Final State: Closed
+[127.0.0.1:55053] Connection finished. Final State: Closed
+[127.0.0.1:55054] Connection finished. Final State: Closed
+[127.0.0.1:55052] Connection finished. Final State: Closed
+[127.0.0.1:55051] Connection finished. Final State: Closed
+[127.0.0.1:55056] Connection finished. Final State: Closed
+[127.0.0.1:55060] Connection finished. Final State: Closed
+[127.0.0.1:55064] Connection finished. Final State: Closed
+[127.0.0.1:55058] Connection finished. Final State: Closed
+[127.0.0.1:55062] Connection finished. Final State: Closed
+[127.0.0.1:55066] Connection finished. Final State: Closed
+[127.0.0.1:55068] Connection finished. Final State: Closed
+[127.0.0.1:55070] Connection finished. Final State: Closed
+[127.0.0.1:55072] Connection finished. Final State: Closed
+[127.0.0.1:55074] Connection finished. Final State: Closed
+[127.0.0.1:55078] Connection finished. Final State: Closed
+[127.0.0.1:55080] Connection finished. Final State: Closed
+[127.0.0.1:55082] Connection finished. Final State: Closed
+[127.0.0.1:55076] Connection finished. Final State: Closed
+[127.0.0.1:55084] Connection finished. Final State: Closed
+[127.0.0.1:55086] Connection finished. Final State: Closed
+[127.0.0.1:55090] Connection finished. Final State: Closed
+[127.0.0.1:55088] Connection finished. Final State: Closed
+[127.0.0.1:55092] Connection finished. Final State: Closed
+[127.0.0.1:55094] Connection finished. Final State: Closed
+[127.0.0.1:55096] Connection finished. Final State: Closed
+[127.0.0.1:55100] Connection finished. Final State: Closed
+[127.0.0.1:55102] Connection finished. Final State: Closed
+[127.0.0.1:55098] Connection finished. Final State: Closed
+[127.0.0.1:55104] Connection finished. Final State: Closed
+[127.0.0.1:55106] Connection finished. Final State: Closed
+[127.0.0.1:55110] Connection finished. Final State: Closed
+[127.0.0.1:55108] Connection finished. Final State: Closed
+[127.0.0.1:55112] Connection finished. Final State: Closed
+[127.0.0.1:55114] Connection finished. Final State: Closed
+[127.0.0.1:55116] Connection finished. Final State: Closed
+[127.0.0.1:55118] Connection finished. Final State: Closed
+[127.0.0.1:55124] Connection finished. Final State: Closed
+[127.0.0.1:55120] Connection finished. Final State: Closed
+[127.0.0.1:55122] Connection finished. Final State: Closed
+[127.0.0.1:55126] Connection finished. Final State: Closed
+[127.0.0.1:55134] Connection finished. Final State: Closed
+[127.0.0.1:55128] Connection finished. Final State: Closed
+[127.0.0.1:55130] Connection finished. Final State: Closed
+[127.0.0.1:55132] Connection finished. Final State: Closed
+[127.0.0.1:55138] Connection finished. Final State: Closed
+[127.0.0.1:55144] Connection finished. Final State: Closed
+[127.0.0.1:55140] Connection finished. Final State: Closed
+[127.0.0.1:55136] Connection finished. Final State: Closed
+[127.0.0.1:55142] Connection finished. Final State: Closed
+[127.0.0.1:55146] Connection finished. Final State: Closed
+[127.0.0.1:55154] Connection finished. Final State: Closed
+[127.0.0.1:55152] Connection finished. Final State: Closed
+[127.0.0.1:55150] Connection finished. Final State: Closed
+[127.0.0.1:55148] Connection finished. Final State: Closed
+[127.0.0.1:55156] Connection finished. Final State: Closed
+[127.0.0.1:55160] Connection finished. Final State: Closed
+[127.0.0.1:55158] Connection finished. Final State: Closed
+[127.0.0.1:55165] Connection finished. Final State: Closed
+[127.0.0.1:55163] Connection finished. Final State: Closed
+[127.0.0.1:55169] Connection finished. Final State: Closed
+[127.0.0.1:55175] Connection finished. Final State: Closed
+[127.0.0.1:55167] Connection finished. Final State: Closed
+[127.0.0.1:55171] Connection finished. Final State: Closed
+[127.0.0.1:55173] Connection finished. Final State: Closed
+[127.0.0.1:55177] Connection finished. Final State: Closed
+[127.0.0.1:55181] Connection finished. Final State: Closed
+[127.0.0.1:55185] Connection finished. Final State: Closed
+[127.0.0.1:55179] Connection finished. Final State: Closed
+[127.0.0.1:55183] Connection finished. Final State: Closed
+[127.0.0.1:55187] Connection finished. Final State: Closed
+[127.0.0.1:55193] Connection finished. Final State: Closed
+[127.0.0.1:55191] Connection finished. Final State: Closed
+[127.0.0.1:55195] Connection finished. Final State: Closed
+[127.0.0.1:55189] Connection finished. Final State: Closed
+[127.0.0.1:55197] Connection finished. Final State: Closed
+[127.0.0.1:55203] Connection finished. Final State: Closed
+[127.0.0.1:55199] Connection finished. Final State: Closed
+[127.0.0.1:55205] Connection finished. Final State: Closed
+[127.0.0.1:55201] Connection finished. Final State: Closed
+[127.0.0.1:55207] Connection finished. Final State: Closed
+[127.0.0.1:55211] Connection finished. Final State: Closed
+[127.0.0.1:55213] Connection finished. Final State: Closed
+[127.0.0.1:55215] Connection finished. Final State: Closed
+[127.0.0.1:55209] Connection finished. Final State: Closed
+[127.0.0.1:55225] Connection finished. Final State: Closed
+[127.0.0.1:55219] Connection finished. Final State: Closed
+[127.0.0.1:55221] Connection finished. Final State: Closed
+[127.0.0.1:55217] Connection finished. Final State: Closed
+[127.0.0.1:55223] Connection finished. Final State: Closed
+[127.0.0.1:55233] Connection finished. Final State: Closed
+[127.0.0.1:55227] Connection finished. Final State: Closed
+[127.0.0.1:55229] Connection finished. Final State: Closed
+[127.0.0.1:55231] Connection finished. Final State: Closed
+[127.0.0.1:55235] Connection finished. Final State: Closed
+[127.0.0.1:55237] Connection finished. Final State: Closed
+[127.0.0.1:55243] Connection finished. Final State: Closed
+[127.0.0.1:55239] Connection finished. Final State: Closed
+[127.0.0.1:55245] Connection finished. Final State: Closed
+[127.0.0.1:55241] Connection finished. Final State: Closed
+[127.0.0.1:55247] Connection finished. Final State: Closed
+[127.0.0.1:55252] Connection finished. Final State: Closed
+[127.0.0.1:55250] Connection finished. Final State: Closed
+[127.0.0.1:55258] Connection finished. Final State: Closed

@@ -1,0 +1,19 @@
+nohup: ignoring input
+Main  2025-11-06 15:50:01 +0800 INFO: Sanic v25.3.0
+INFO:sanic.root:Sanic v25.3.0
+Main  2025-11-06 15:50:01 +0800 INFO: Goin' Fast @ http://0.0.0.0:8000
+INFO:sanic.root:Goin' Fast @ http://0.0.0.0:8000
+Main  2025-11-06 15:50:01 +0800 INFO: app: EchoServer
+INFO:sanic.root:app: EchoServer
+Main  2025-11-06 15:50:01 +0800 INFO: mode: production, single worker
+INFO:sanic.root:mode: production, single worker
+Main  2025-11-06 15:50:01 +0800 INFO: server: sanic, HTTP/1.1
+INFO:sanic.root:server: sanic, HTTP/1.1
+Main  2025-11-06 15:50:01 +0800 INFO: python: 3.12.3
+INFO:sanic.root:python: 3.12.3
+Main  2025-11-06 15:50:01 +0800 INFO: platform: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+INFO:sanic.root:platform: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+Main  2025-11-06 15:50:01 +0800 INFO: packages: sanic-routing==23.12.0
+INFO:sanic.root:packages: sanic-routing==23.12.0
+Srv 0 2025-11-06 15:50:02 +0800 INFO: Starting worker [15079]
+INFO:sanic.server:Starting worker [15079]

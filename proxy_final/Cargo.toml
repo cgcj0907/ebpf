@@ -1,0 +1,12 @@
+[package]
+name = "proxy_final"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+regex = "1.0"
+lazy_static = "1.4"
+async-trait = "0.1"
+deadpool = "0.10"
+chrono = {version="0.4",features=["serde"]}
