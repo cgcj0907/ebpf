@@ -1,0 +1,308 @@
+nohup: ignoring input
+warning: unused import: `regex::Regex`
+  --> src/main.rs:10:5
+   |
+10 | use regex::Regex;
+   |     ^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `Object`
+  --> src/main.rs:12:41
+   |
+12 | use deadpool::{managed::{Pool, Manager, Object, RecycleError, RecycleResult}};
+   |                                         ^^^^^^
+
+warning: unused import: `deadpool::managed::PoolConfig`
+  --> src/main.rs:15:5
+   |
+15 | use deadpool::managed::PoolConfig;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:174:13
+    |
+174 |     let mut state = ConnectionState::NewConnection;
+    |             ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `is_websocket` is never read
+   --> src/main.rs:175:13
+    |
+175 |     let mut is_websocket = false;
+    |             ^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `header_len`
+   --> src/main.rs:199:25
+    |
+199 |                     let header_len = header_end_pos + 4;
+    |                         ^^^^^^^^^^
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+help: if this is intentional, prefix it with an underscore
+    |
+199 |                     let _header_len = header_end_pos + 4;
+    |                         +
+help: you might have meant to pattern match on the similarly named constant `BUFFER_SIZE`
+    |
+199 -                     let header_len = header_end_pos + 4;
+199 +                     let BUFFER_SIZE = header_end_pos + 4;
+    |
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:212:21
+    |
+212 |                     state = ConnectionState::ConnectingToBackend;
+    |                     ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:236:21
+    |
+236 |                     state = ConnectionState::WritingRequestHeader;
+    |                     ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:243:21
+    |
+243 |                     state = ConnectionState::ReadingResponseHeader;
+    |                     ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:248:25
+    |
+248 |                         state = ConnectionState::Tunneling;
+    |                         ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: value assigned to `state` is never read
+   --> src/main.rs:299:29
+    |
+299 | ...                   state = ConnectionState::ForwardingResponse;
+    |                       ^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: unused variable: `sigint`
+   --> src/main.rs:358:13
+    |
+358 |     let mut sigint = signal::ctrl_c();
+    |             ^^^^^^ help: if this is intentional, prefix it with an underscore: `_sigint`
+
+warning: variable does not need to be mutable
+   --> src/main.rs:358:9
+    |
+358 |     let mut sigint = signal::ctrl_c();
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variant `WritingResponseHeader` is never constructed
+  --> src/main.rs:31:5
+   |
+26 | enum ConnectionState {
+   |      --------------- variant in this enum
+...
+31 |     WritingResponseHeader,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `ConnectionState` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `proxy_final` (bin "proxy_final") generated 14 warnings (run `cargo fix --bin "proxy_final"` to apply 5 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.23s
+     Running `target/debug/proxy_final`
+读取配置文件: config.conf
+代理监听地址: 0.0.0.0:8080
+后端服务器: 127.0.0.1:8000
+Backend TCP Pool initialized (Max: 10, Min idle: 2).
+Proxy listening on 0.0.0.0:8080
+[127.0.0.1:36084] Connection finished. Final State: Closed
+[127.0.0.1:36088] Connection finished. Final State: Closed
+[127.0.0.1:36098] Connection finished. Final State: Closed
+[127.0.0.1:36112] Connection finished. Final State: Closed
+[127.0.0.1:47030] Connection finished. Final State: Closed
+[127.0.0.1:47036] Connection finished. Final State: Closed
+[127.0.0.1:47044] Connection finished. Final State: Closed
+[127.0.0.1:47058] Connection finished. Final State: Closed
+[127.0.0.1:47072] Connection finished. Final State: Closed
+[127.0.0.1:47070] Connection finished. Final State: Closed
+[127.0.0.1:47086] Connection finished. Final State: Closed
+[127.0.0.1:47076] Connection finished. Final State: Closed
+[127.0.0.1:47116] Connection finished. Final State: Closed
+[127.0.0.1:47100] Connection finished. Final State: Closed
+[127.0.0.1:47130] Connection finished. Final State: Closed
+[127.0.0.1:47132] Connection finished. Final State: Closed
+[127.0.0.1:47142] Connection finished. Final State: Closed
+[127.0.0.1:47156] Connection finished. Final State: Closed
+[127.0.0.1:47170] Connection finished. Final State: Closed
+[127.0.0.1:47160] Connection finished. Final State: Closed
+[127.0.0.1:47178] Connection finished. Final State: Closed
+[127.0.0.1:47194] Connection finished. Final State: Closed
+[127.0.0.1:47210] Connection finished. Final State: Closed
+[127.0.0.1:47226] Connection finished. Final State: Closed
+[127.0.0.1:47242] Connection finished. Final State: Closed
+[127.0.0.1:47248] Connection finished. Final State: Closed
+[127.0.0.1:47270] Connection finished. Final State: Closed
+[127.0.0.1:47302] Connection finished. Final State: Closed
+[127.0.0.1:47304] Connection finished. Final State: Closed
+[127.0.0.1:47316] Connection finished. Final State: Closed
+[127.0.0.1:47332] Connection finished. Final State: Closed
+[127.0.0.1:47342] Connection finished. Final State: Closed
+[127.0.0.1:47350] Connection finished. Final State: Closed
+[127.0.0.1:47364] Connection finished. Final State: Closed
+[127.0.0.1:47378] Connection finished. Final State: Closed
+[127.0.0.1:47382] Connection finished. Final State: Closed
+[127.0.0.1:47396] Connection finished. Final State: Closed
+[127.0.0.1:47404] Connection finished. Final State: Closed
+[127.0.0.1:47408] Connection finished. Final State: Closed
+[127.0.0.1:47420] Connection finished. Final State: Closed
+[127.0.0.1:47430] Connection finished. Final State: Closed
+[127.0.0.1:47436] Connection finished. Final State: Closed
+[127.0.0.1:47442] Connection finished. Final State: Closed
+[127.0.0.1:47448] Connection finished. Final State: Closed
+[127.0.0.1:47456] Connection finished. Final State: Closed
+[127.0.0.1:47466] Connection finished. Final State: Closed
+[127.0.0.1:47468] Connection finished. Final State: Closed
+[127.0.0.1:47472] Connection finished. Final State: Closed
+[127.0.0.1:47482] Connection finished. Final State: Closed
+[127.0.0.1:47508] Connection finished. Final State: Closed
+[127.0.0.1:47494] Connection finished. Final State: Closed
+[127.0.0.1:47524] Connection finished. Final State: Closed
+[127.0.0.1:47532] Connection finished. Final State: Closed
+[127.0.0.1:47546] Connection finished. Final State: Closed
+[127.0.0.1:47548] Connection finished. Final State: Closed
+[127.0.0.1:47566] Connection finished. Final State: Closed
+[127.0.0.1:47578] Connection finished. Final State: Closed
+[127.0.0.1:47580] Connection finished. Final State: Closed
+[127.0.0.1:47582] Connection finished. Final State: Closed
+[127.0.0.1:47590] Connection finished. Final State: Closed
+[127.0.0.1:47606] Connection finished. Final State: Closed
+[127.0.0.1:47608] Connection finished. Final State: Closed
+[127.0.0.1:47624] Connection finished. Final State: Closed
+[127.0.0.1:47630] Connection finished. Final State: Closed
+[127.0.0.1:47636] Connection finished. Final State: Closed
+[127.0.0.1:47640] Connection finished. Final State: Closed
+[127.0.0.1:47648] Connection finished. Final State: Closed
+[127.0.0.1:47654] Connection finished. Final State: Closed
+[127.0.0.1:47670] Connection finished. Final State: Closed
+[127.0.0.1:47680] Connection finished. Final State: Closed
+[127.0.0.1:47674] Connection finished. Final State: Closed
+[127.0.0.1:47698] Connection finished. Final State: Closed
+[127.0.0.1:47690] Connection finished. Final State: Closed
+[127.0.0.1:47700] Connection finished. Final State: Closed
+[127.0.0.1:47712] Connection finished. Final State: Closed
+[127.0.0.1:47718] Connection finished. Final State: Closed
+[127.0.0.1:47726] Connection finished. Final State: Closed
+[127.0.0.1:47750] Connection finished. Final State: Closed
+[127.0.0.1:47738] Connection finished. Final State: Closed
+[127.0.0.1:47762] Connection finished. Final State: Closed
+[127.0.0.1:47778] Connection finished. Final State: Closed
+[127.0.0.1:47788] Connection finished. Final State: Closed
+[127.0.0.1:47786] Connection finished. Final State: Closed
+[127.0.0.1:47812] Connection finished. Final State: Closed
+[127.0.0.1:47804] Connection finished. Final State: Closed
+[127.0.0.1:47818] Connection finished. Final State: Closed
+[127.0.0.1:47832] Connection finished. Final State: Closed
+[127.0.0.1:35164] Connection finished. Final State: Closed
+[127.0.0.1:35174] Connection finished. Final State: Closed
+[127.0.0.1:35182] Connection finished. Final State: Closed
+[127.0.0.1:35192] Connection finished. Final State: Closed
+[127.0.0.1:35204] Connection finished. Final State: Closed
+[127.0.0.1:35218] Connection finished. Final State: Closed
+[127.0.0.1:35234] Connection finished. Final State: Closed
+[127.0.0.1:35242] Connection finished. Final State: Closed
+[127.0.0.1:35254] Connection finished. Final State: Closed
+[127.0.0.1:35258] Connection finished. Final State: Closed
+[127.0.0.1:35264] Connection finished. Final State: Closed
+[127.0.0.1:35276] Connection finished. Final State: Closed
+[127.0.0.1:35292] Connection finished. Final State: Closed
+[127.0.0.1:35310] Connection finished. Final State: Closed
+[127.0.0.1:35302] Connection finished. Final State: Closed
+[127.0.0.1:35320] Connection finished. Final State: Closed
+[127.0.0.1:35334] Connection finished. Final State: Closed
+[127.0.0.1:35388] Connection finished. Final State: Closed
+[127.0.0.1:35392] Connection finished. Final State: Closed
+[127.0.0.1:35404] Connection finished. Final State: Closed
+[127.0.0.1:35416] Connection finished. Final State: Closed
+[127.0.0.1:35418] Connection finished. Final State: Closed
+[127.0.0.1:35420] Connection finished. Final State: Closed
+[127.0.0.1:35428] Connection finished. Final State: Closed
+[127.0.0.1:35444] Connection finished. Final State: Closed
+[127.0.0.1:35450] Connection finished. Final State: Closed
+[127.0.0.1:35460] Connection finished. Final State: Closed
+[127.0.0.1:35462] Connection finished. Final State: Closed
+[127.0.0.1:35476] Connection finished. Final State: Closed
+[127.0.0.1:35490] Connection finished. Final State: Closed
+[127.0.0.1:35496] Connection finished. Final State: Closed
+[127.0.0.1:35500] Connection finished. Final State: Closed
+[127.0.0.1:35502] Connection finished. Final State: Closed
+[127.0.0.1:35512] Connection finished. Final State: Closed
+[127.0.0.1:35518] Connection finished. Final State: Closed
+[127.0.0.1:35526] Connection finished. Final State: Closed
+[127.0.0.1:35520] Connection finished. Final State: Closed
+[127.0.0.1:35534] Connection finished. Final State: Closed
+[127.0.0.1:35540] Connection finished. Final State: Closed
+[127.0.0.1:35552] Connection finished. Final State: Closed
+[127.0.0.1:35574] Connection finished. Final State: Closed
+[127.0.0.1:35576] Connection finished. Final State: Closed
+[127.0.0.1:35598] Connection finished. Final State: Closed
+[127.0.0.1:35584] Connection finished. Final State: Closed
+[127.0.0.1:35608] Connection finished. Final State: Closed
+[127.0.0.1:35624] Connection finished. Final State: Closed
+[127.0.0.1:35626] Connection finished. Final State: Closed
+[127.0.0.1:35652] Connection finished. Final State: Closed
+[127.0.0.1:35656] Connection finished. Final State: Closed
+[127.0.0.1:35666] Connection finished. Final State: Closed
+[127.0.0.1:35674] Connection finished. Final State: Closed
+[127.0.0.1:35680] Connection finished. Final State: Closed
+[127.0.0.1:35692] Connection finished. Final State: Closed
+[127.0.0.1:35708] Connection finished. Final State: Closed
+[127.0.0.1:35712] Connection finished. Final State: Closed
+[127.0.0.1:35722] Connection finished. Final State: Closed
+[127.0.0.1:35724] Connection finished. Final State: Closed
+[127.0.0.1:35736] Connection finished. Final State: Closed
+[127.0.0.1:35742] Connection finished. Final State: Closed
+[127.0.0.1:35744] Connection finished. Final State: Closed
+[127.0.0.1:35750] Connection finished. Final State: Closed
+[127.0.0.1:35766] Connection finished. Final State: Closed
+[127.0.0.1:35768] Connection finished. Final State: Closed
+[127.0.0.1:35776] Connection finished. Final State: Closed
+[127.0.0.1:35778] Connection finished. Final State: Closed
+[127.0.0.1:35788] Connection finished. Final State: Closed
+[127.0.0.1:35796] Connection finished. Final State: Closed
+[127.0.0.1:35802] Connection finished. Final State: Closed
+[127.0.0.1:35814] Connection finished. Final State: Closed
+[127.0.0.1:35816] Connection finished. Final State: Closed
+[127.0.0.1:35830] Connection finished. Final State: Closed
+[127.0.0.1:35842] Connection finished. Final State: Closed
+[127.0.0.1:35854] Connection finished. Final State: Closed
+[127.0.0.1:35856] Connection finished. Final State: Closed
+[127.0.0.1:35866] Connection finished. Final State: Closed
+[127.0.0.1:35880] Connection finished. Final State: Closed
+[127.0.0.1:35896] Connection finished. Final State: Closed
+[127.0.0.1:35912] Connection finished. Final State: Closed
+[127.0.0.1:35916] Connection finished. Final State: Closed
+[127.0.0.1:59528] Connection finished. Final State: Closed
+[127.0.0.1:59534] Connection finished. Final State: Closed
+[127.0.0.1:59540] Connection finished. Final State: Closed
+[127.0.0.1:59552] Connection finished. Final State: Closed
+[127.0.0.1:59568] Connection finished. Final State: Closed
+[127.0.0.1:59574] Connection finished. Final State: Closed
+[127.0.0.1:59590] Connection finished. Final State: Closed
+[127.0.0.1:59598] Connection finished. Final State: Closed
+[127.0.0.1:59600] Connection finished. Final State: Closed
+[127.0.0.1:59602] Connection finished. Final State: Closed
+[127.0.0.1:59618] Connection finished. Final State: Closed

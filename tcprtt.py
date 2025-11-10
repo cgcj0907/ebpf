@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 # @lint-avoid-python-3-compatibility-imports
 #
-# tcprtt    Summarize TCP RTT as a histogram. For Linux, uses BCC, eBPF.
+# tcprtt    Summarize TCP RTT as averages per local port every interval. For Linux, uses BCC, eBPF.
 #
-# USAGE: tcprtt [-h] [-T] [-D] [-m] [-i INTERVAL] [-d DURATION]
-#           [-p LPORT] [-P RPORT] [-a LADDR] [-A RADDR] [-b] [-B] [-e]
+# USAGE: tcprtt [-h] [-T] [-m] [-i INTERVAL] [-d DURATION]
+#           [-p LPORT] [-P RPORT] [-a LADDR] [-A RADDR]
 #           [-4 | -6]
+#
+# Modified: aggregate average RTT per local port every interval (default 5s).
 #
 # Copyright (c) 2020 zhenwei pi
 # Licensed under the Apache License, Version 2.0 (the "License")
 #
 # 23-AUG-2020  zhenwei pi  Created this.
+# Modified: produce per-port average RTT every interval.
 
 from __future__ import print_function
 from bcc import BPF
@@ -22,46 +25,33 @@ import ctypes
 
 # arguments
 examples = """examples:
-    ./tcprtt            # summarize TCP RTT
-    ./tcprtt -i 1 -d 10 # print 1 second summaries, 10 times
-    ./tcprtt -m -T      # summarize in millisecond, and timestamps
-    ./tcprtt -p         # filter for local port
-    ./tcprtt -P         # filter for remote port
-    ./tcprtt -a         # filter for local address
-    ./tcprtt -A         # filter for remote address
-    ./tcprtt -b         # show sockets histogram by local address
-    ./tcprtt -B         # show sockets histogram by remote address
-    ./tcprtt -D         # show debug bpf text
-    ./tcprtt -e         # show extension summary(average)
-    ./tcprtt -4         # trace only IPv4 family
-    ./tcprtt -6         # trace only IPv6 family
+    ./tcprtt               # average RTT per LPORT every 5s
+    ./tcprtt -i 1 -d 10   # 1s summaries, 10 times
+    ./tcprtt -m -T        # millisecond units and timestamps
+    ./tcprtt -p 80        # only record port 80 (BPF-side filter)
+    ./tcprtt -4           # IPv4 only
+    ./tcprtt -6           # IPv6 only
 """
 parser = argparse.ArgumentParser(
-    description="Summarize TCP RTT as a histogram",
+    description="Average TCP RTT per local port",
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog=examples)
-parser.add_argument("-i", "--interval",
-    help="summary interval, seconds")
+parser.add_argument("-i", "--interval", type=int, default=5,
+    help="summary interval (seconds). Default 5s")
 parser.add_argument("-d", "--duration", type=int, default=99999,
     help="total duration of trace, seconds")
 parser.add_argument("-T", "--timestamp", action="store_true",
     help="include timestamp on output")
 parser.add_argument("-m", "--milliseconds", action="store_true",
-    help="millisecond histogram")
+    help="report RTT in milliseconds (default: usecs)")
 parser.add_argument("-p", "--lport",
-    help="filter for local port")
+    help="filter for local port (BPF-side: only record this local port)")
 parser.add_argument("-P", "--rport",
     help="filter for remote port")
 parser.add_argument("-a", "--laddr",
     help="filter for local address")
 parser.add_argument("-A", "--raddr",
     help="filter for remote address")
-parser.add_argument("-b", "--byladdr", action="store_true",
-    help="show sockets histogram by local address")
-parser.add_argument("-B", "--byraddr", action="store_true",
-    help="show sockets histogram by remote address")
-parser.add_argument("-e", "--extension", action="store_true",
-    help="show extension summary(average)")
 parser.add_argument("-D", "--debug", action="store_true",
     help="print BPF program before starting (for debugging purposes)")
 group = parser.add_mutually_exclusive_group()
@@ -72,10 +62,8 @@ group.add_argument("-6", "--ipv6", action="store_true",
 parser.add_argument("--ebpf", action="store_true",
     help=argparse.SUPPRESS)
 args = parser.parse_args()
-if not args.interval:
-    args.interval = args.duration
 
-# define BPF program
+# define BPF program (adds port_sum/port_count maps keyed by u64(port))
 bpf_text = """
 #include <uapi/linux/ptrace.h>
 #include <linux/tcp.h>
@@ -83,23 +71,13 @@ bpf_text = """
 #include <net/inet_sock.h>
 #include <bcc/proto.h>
 
-typedef struct sock_key {
-    u64 addr;
-    u64 slot;
-} sock_key_t;
-
-typedef struct sock_latenty {
-    u64 latency;
-    u64 count;
-} sock_latency_t;
-
-BPF_HISTOGRAM(hist_srtt, sock_key_t);
-BPF_HASH(latency, u64, sock_latency_t);
+BPF_HASH(port_sum, u64, u64);
+BPF_HASH(port_count, u64, u64);
 
 int trace_tcp_rcv(struct pt_regs *ctx, struct sock *sk, struct sk_buff *skb)
 {
     struct tcp_sock *ts = (struct tcp_sock *)sk;
-    u32 srtt = ts->srtt_us >> 3;
+    u32 srtt = ts->srtt_us >> 3; /* srtt in usec by kernel convention */
     const struct inet_sock *inet = (struct inet_sock *)sk;
 
     /* filters */
@@ -110,12 +88,6 @@ int trace_tcp_rcv(struct pt_regs *ctx, struct sock *sk, struct sk_buff *skb)
     __u8 saddr6[16];
     __u8 daddr6[16];
     u16 family = 0;
-
-    /* for histogram */
-    sock_key_t key;
-
-    /* for avg latency, if no saddr/daddr specified, use 0(addr) as key */
-    u64 addr = 0;
 
     bpf_probe_read_kernel(&sport, sizeof(sport), (void *)&inet->inet_sport);
     bpf_probe_read_kernel(&dport, sizeof(dport), (void *)&inet->inet_dport);
@@ -138,17 +110,31 @@ int trace_tcp_rcv(struct pt_regs *ctx, struct sock *sk, struct sk_buff *skb)
 
     FACTOR
 
-    STORE_HIST
-    key.slot = bpf_log2l(srtt);
-    hist_srtt.atomic_increment(key);
-
-    STORE_LATENCY
+    /* aggregate by local port: key is host-order port as u64 */
+    {
+        u16 sport_host = ntohs(sport);
+        u64 key = (u64)sport_host;
+        u64 *ps = port_sum.lookup(&key);
+        if (ps) {
+            __sync_fetch_and_add(ps, (u64)srtt);
+        } else {
+            u64 init = srtt;
+            port_sum.update(&key, &init);
+        }
+        u64 one = 1;
+        u64 *pc = port_count.lookup(&key);
+        if (pc) {
+            __sync_fetch_and_add(pc, one);
+        } else {
+            port_count.update(&key, &one);
+        }
+    }
 
     return 0;
 }
 """
 
-# filter for local port
+# filter for local port (-p)
 if args.lport:
     bpf_text = bpf_text.replace('LPORTFILTER',
         """if (ntohs(sport) != %d)
@@ -156,7 +142,7 @@ if args.lport:
 else:
     bpf_text = bpf_text.replace('LPORTFILTER', '')
 
-# filter for remote port
+# filter for remote port (-P)
 if args.rport:
     bpf_text = bpf_text.replace('RPORTFILTER',
         """if (ntohs(dport) != %d)
@@ -167,25 +153,29 @@ else:
 def addrfilter(addr, src_or_dest):
     try:
         naddr = socket.inet_pton(AF_INET, addr)
-    except:
+    except Exception:
+        # IPv6
         naddr = socket.inet_pton(AF_INET6, addr)
+        # represent bytes in C string escaped hex
         s = ('\\' + struct.unpack("=16s", naddr)[0].hex('\\')).replace('\\', '\\x')
         filter = "if (memcmp(%s6, \"%s\", 16)) return 0;" % (src_or_dest, s)
     else:
         filter = "if (%s != %d) return 0;" % (src_or_dest, struct.unpack("=I", naddr)[0])
     return filter
 
-# filter for local address
+# filter for local address (-a)
 if args.laddr:
     bpf_text = bpf_text.replace('LADDRFILTER', addrfilter(args.laddr, 'saddr'))
 else:
     bpf_text = bpf_text.replace('LADDRFILTER', '')
 
-# filter for remote address
+# filter for remote address (-A)
 if args.raddr:
     bpf_text = bpf_text.replace('RADDRFILTER', addrfilter(args.raddr, 'daddr'))
 else:
     bpf_text = bpf_text.replace('RADDRFILTER', '')
+
+# IPv4/IPv6 family filter
 if args.ipv4:
     bpf_text = bpf_text.replace('FAMILYFILTER',
         'if (family != AF_INET) { return 0; }')
@@ -194,42 +184,14 @@ elif args.ipv6:
         'if (family != AF_INET6) { return 0; }')
 else:
     bpf_text = bpf_text.replace('FAMILYFILTER', '')
-# show msecs or usecs[default]
+
+# milliseconds or usecs
 if args.milliseconds:
     bpf_text = bpf_text.replace('FACTOR', 'srtt /= 1000;')
-    label = "msecs"
+    unit_label = "msecs"
 else:
     bpf_text = bpf_text.replace('FACTOR', '')
-    label = "usecs"
-
-print_header = "srtt"
-# show byladdr/byraddr histogram
-if args.byladdr:
-    bpf_text = bpf_text.replace('STORE_HIST', 'key.addr = addr = saddr;')
-    print_header = "Local Address"
-elif args.byraddr:
-    bpf_text = bpf_text.replace('STORE_HIST', 'key.addr = addr = daddr;')
-    print_header = "Remote Addres"
-else:
-    bpf_text = bpf_text.replace('STORE_HIST', 'key.addr = addr = 0;')
-    print_header = "All Addresses"
-
-if args.extension:
-    bpf_text = bpf_text.replace('STORE_LATENCY', """
-    sock_latency_t newlat = {0};
-    sock_latency_t *lat;
-    lat = latency.lookup(&addr);
-    if (!lat) {
-        newlat.latency += srtt;
-        newlat.count += 1;
-        latency.update(&addr, &newlat);
-    } else {
-        lat->latency +=srtt;
-        lat->count += 1;
-    }
-    """)
-else:
-    bpf_text = bpf_text.replace('STORE_LATENCY', '')
+    unit_label = "usecs"
 
 # debug/dump ebpf enable or not
 if args.debug or args.ebpf:
@@ -237,51 +199,105 @@ if args.debug or args.ebpf:
     if args.ebpf:
         exit()
 
-# check whether hash table batch ops is supported
-htab_batch_ops = True if BPF.kernel_struct_has_field(b'bpf_map_ops',
-        b'map_lookup_and_delete_batch') == 1 else False
-
 # load BPF program
 b = BPF(text=bpf_text)
 b.attach_kprobe(event="tcp_rcv_established", fn_name="trace_tcp_rcv")
 
-print("Tracing TCP RTT... Hit Ctrl-C to end.")
-
-def print_section(addr):
-    addrstr = "*******"
-    if (addr):
-        addrstr = inet_ntop(AF_INET, struct.pack("I", addr))
-
-    avglat = ""
-    if args.extension:
-        lats = b.get_table("latency")
-        lat = lats[ctypes.c_ulong(addr)]
-        avglat = " [AVG %d]" % (lat.latency / lat.count)
-
-    return addrstr + avglat
-
-# output
-exiting = 0 if args.interval else 1
-dist = b.get_table("hist_srtt")
-lathash = b.get_table("latency")
+print("Tracing TCP RTT and aggregating per local port... Hit Ctrl-C to end.")
+interval = int(args.interval)
+duration = int(args.duration)
 seconds = 0
-while (1):
+exiting = 0 if interval else 1
+
+# helper to get integer key value from BPF map key object
+def key_to_int(k):
+    # keys are ctypes (c_ulonglong etc). Try to extract .value
     try:
-        sleep(int(args.interval))
-        seconds = seconds + int(args.interval)
-    except KeyboardInterrupt:
-        exiting = 1
+        return int(k.value)
+    except Exception:
+        try:
+            # maybe object has .port or bytes
+            return int(k)
+        except Exception:
+            return None
 
-    print()
-    if args.timestamp:
-        print("%-8s\n" % strftime("%H:%M:%S"), end="")
+# main loop: every interval, read port_sum & port_count, compute averages
+try:
+    header_printed = False
+    while True:
+        sleep(interval)
+        seconds += interval
 
-    dist.print_log2_hist(label, section_header=print_header, section_print_fn=print_section)
-    dist.clear()
-    if  htab_batch_ops:
-        lathash.items_delete_batch()
-    else:
-        lathash.clear()
+        port_sum_tbl = b.get_table("port_sum")
+        port_cnt_tbl = b.get_table("port_count")
 
-    if exiting or seconds >= args.duration:
-        exit()
+        # build dict port -> (sum, count)
+        port_stats = {}
+        # read sums
+        for k, v in port_sum_tbl.items():
+            port = key_to_int(k)
+            if port is None:
+                continue
+            port_stats[port] = [int(v.value), 0]
+        # read counts
+        for k, v in port_cnt_tbl.items():
+            port = key_to_int(k)
+            if port is None:
+                continue
+            if port in port_stats:
+                port_stats[port][1] = int(v.value)
+            else:
+                port_stats[port] = [0, int(v.value)]
+
+        # print header once
+        if not header_printed:
+            if args.timestamp:
+                print("%-8s %-6s %-12s %-8s" % ("TIME", "LPORT", "AVG_RTT", "UNITS"))
+            else:
+                print("%-6s %-12s %-8s" % ("LPORT", "AVG_RTT", "UNITS"))
+            header_printed = True
+
+        now = strftime("%H:%M:%S")
+        if not port_stats:
+            # no data in this window
+            if args.timestamp:
+                print("%-8s %-6s %-12s %-8s" % (now, "-", 0, unit_label))
+            else:
+                print("%-6s %-12s %-8s" % ("-", 0, unit_label))
+        else:
+            # sort by count desc then port
+            for p, (s, c) in sorted(port_stats.items(), key=lambda it: (-(it[1][1]), it[0])):
+                avg = 0.0
+                if c > 0:
+                    avg = float(s) / float(c)
+                # print nicely
+                if args.timestamp:
+                    print("%-8s %-6d %-12.2f %-8s" % (now, p, avg, unit_label))
+                else:
+                    print("%-6d %-12.2f %-8s" % (p, avg, unit_label))
+
+        # clear maps for next interval (sliding-window style)
+        try:
+            port_sum_tbl.clear()
+            port_cnt_tbl.clear()
+        except AttributeError:
+            # fallback to deleting keys one-by-one
+            for key in list(port_sum_tbl.keys()):
+                try:
+                    del port_sum_tbl[key]
+                except Exception:
+                    pass
+            for key in list(port_cnt_tbl.keys()):
+                try:
+                    del port_cnt_tbl[key]
+                except Exception:
+                    pass
+
+        # exit when duration reached
+        if seconds >= duration:
+            break
+
+except KeyboardInterrupt:
+    pass
+
+print("Exiting.")
