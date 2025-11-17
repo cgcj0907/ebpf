@@ -331,3 +331,8 @@ Proxy listening on 0.0.0.0:8080
 [79.124.40.174:52576] Error reading from client: Connection reset by peer (os error 104)
 [79.124.40.174:36828] Connection finished. Final State: Closed
 [81.161.239.26:55008] Connection finished. Final State: Closed
+[79.124.40.174:58628] Connection finished. Final State: Closed
+[79.124.40.174:58264] Connection finished. Final State: Closed
+[79.124.40.174:59684] Connection finished. Final State: Closed
+[79.124.40.174:56050] Connection finished. Final State: Closed
+[193.142.147.209:19336] Connection finished. Final State: Closed
