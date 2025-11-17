@@ -1,6 +1,6 @@
 from scapy.all import IP, TCP, send
 
-TARGET_IP = "127.0.0.1"
+TARGET_IP = "117.72.198.106"
 TARGET_PORT = 8080
 COUNT = 5
 

@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# @lint-avoid-python-3-compatibility-imports
 #
-# tcpcong_full.py
-# tcpcong + connect-syscall-latency integration + summary statistics
+# tcpcong  Measure tcp congestion control status duration.
+#           For Linux, uses BCC, eBPF.
 #
-# Usage:
-#   sudo python3 tcpcong_full.py [interval] [outputs]
-#   examples:
-#     sudo python3 tcpcong_full.py 5        # every 5s print table+summary
-#     sudo python3 tcpcong_full.py -u 5     # microseconds output
+# USAGE: tcpcong [-h] [-T] [-L] [-R] [-m] [-d] [interval] [outputs]
 #
+# Copyright (c) Ping Gan.
+#
+# 27-Jan-2022   Ping Gan   Created this.
+
 from __future__ import print_function
 from bcc import BPF
 from time import sleep, strftime
@@ -18,16 +18,16 @@ from socket import inet_ntop, AF_INET, AF_INET6
 import argparse
 
 examples = """examples:
-    ./tcpcong_full                 # show tcp congestion status duration
-    ./tcpcong_full 1 10            # show 1 second summaries, 10 times
-    ./tcpcong_full -L 3000-3006 1  # 1s summaries, local port 3000-3006
-    ./tcpcong_full -R 5000-5005 1  # 1s summaries, remote port 5000-5005
-    ./tcpcong_full -uT 1           # 1s summaries, microseconds, and timestamps
-    ./tcpcong_full -d              # show the duration as histograms
+    ./tcpcong                 # show tcp congestion status duration
+    ./tcpcong 1 10            # show 1 second summaries, 10 times
+    ./tcpcong -L 3000-3006 1  # 1s summaries, local port 3000-3006
+    ./tcpcong -R 5000-5005 1  # 1s summaries, remote port 5000-5005
+    ./tcpcong -uT 1           # 1s summaries, microseconds, and timestamps
+    ./tcpcong -d              # show the duration as histograms
 """
 
 parser = argparse.ArgumentParser(
-    description="Summarize tcp socket congestion control status duration (with connect latency)",
+    description="Summarize tcp socket congestion control status duration",
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog=examples)
 parser.add_argument("-L", "--localport",
@@ -84,8 +84,8 @@ if start_lport > end_lport:
     start_lport = end_lport
     end_lport = tmp
 
-# ------------------- BPF program text -------------------
-bpf_head_text = r"""
+# define BPF program
+bpf_head_text = """
 #include <uapi/linux/ptrace.h>
 #include <net/sock.h>
 #include <bcc/proto.h>
@@ -107,27 +107,18 @@ typedef struct ipv6_flow_key {
 } ipv6_flow_key_t;
 
 typedef struct data_val {
+    DEF_TEXT
     u64  last_ts;
     u16  last_cong_stat;
-    u64  open_dura;
-    u64  loss_dura;
-    u64  disorder_dura;
-    u64  recover_dura;
-    u64  cwr_dura;
-    u64  total_changes;
 } data_val_t;
 
 BPF_HASH(ipv4_stat, ipv4_flow_key_t, data_val_t);
 BPF_HASH(ipv6_stat, ipv6_flow_key_t, data_val_t);
 
-/* --- maps for connect syscall latency collection --- */
-BPF_HASH(currsock, u32, struct sock *);
-BPF_HASH(connect_start, u32, u64);
-
-/* HIST_TABLE placeholder */
+HIST_TABLE
 """
 
-bpf_extra_head = r"""
+bpf_extra_head = """
 typedef struct process_key {
     char comm[TASK_COMM_LEN];
     u32  tid;
@@ -155,8 +146,7 @@ typedef struct cong {
 } cong_status_t;
 """
 
-# no-ca TP body (existing logic)
-bpf_no_ca_tp_body_text = r"""
+bpf_no_ca_tp_body_text = """
 static int entry_state_update_func(struct sock *sk)
 {
     u16 dport = 0, lport = 0;
@@ -235,13 +225,6 @@ static int ret_state_update_func(struct sock *sk)
         if (datap == 0) {
             data.last_ts = bpf_ktime_get_ns();
             data.last_cong_stat = val4->cong_state;
-            // Initialize all duration fields to 0
-            data.open_dura = 0;
-            data.loss_dura = 0;
-            data.disorder_dura = 0;
-            data.recover_dura = 0;
-            data.cwr_dura = 0;
-            data.total_changes = 0;
             ipv4_stat.update(&keyv4, &data);
         } else {
             last_cong_state = val4->cong_state;
@@ -268,13 +251,6 @@ static int ret_state_update_func(struct sock *sk)
         if (datap == 0) {
             data.last_ts = bpf_ktime_get_ns();
             data.last_cong_stat = val6->cong_state;
-            // Initialize all duration fields to 0
-            data.open_dura = 0;
-            data.loss_dura = 0;
-            data.disorder_dura = 0;
-            data.recover_dura = 0;
-            data.cwr_dura = 0;
-            data.total_changes = 0;
             ipv6_stat.update(&keyv6, &data);
         } else {
             last_cong_state = val6->cong_state;
@@ -294,8 +270,7 @@ static int ret_state_update_func(struct sock *sk)
 }
 """
 
-# tracepoint body (same as before)
-bpf_ca_tp_body_text = r"""
+bpf_ca_tp_body_text = """
 TRACEPOINT_PROBE(tcp, tcp_cong_state_set)
 {
     u64 ts, ts1;
@@ -321,13 +296,6 @@ TRACEPOINT_PROBE(tcp, tcp_cong_state_set)
         if (datap == 0) {
             data.last_ts = bpf_ktime_get_ns();
             data.last_cong_stat = cong_state + 1;
-            // Initialize all duration fields to 0
-            data.open_dura = 0;
-            data.loss_dura = 0;
-            data.disorder_dura = 0;
-            data.recover_dura = 0;
-            data.cwr_dura = 0;
-            data.total_changes = 0;
             ipv4_stat.update(&key4, &data);
         } else {
             last_cong_state = datap->last_cong_stat;
@@ -354,13 +322,6 @@ TRACEPOINT_PROBE(tcp, tcp_cong_state_set)
         if (datap == 0) {
             data.last_ts = bpf_ktime_get_ns();
             data.last_cong_stat = cong_state + 1;
-            // Initialize all duration fields to 0
-            data.open_dura = 0;
-            data.loss_dura = 0;
-            data.disorder_dura = 0;
-            data.recover_dura = 0;
-            data.cwr_dura = 0;
-            data.total_changes = 0;
             ipv6_stat.update(&key6, &data);
         } else {
             last_cong_state = datap->last_cong_stat;
@@ -378,8 +339,7 @@ TRACEPOINT_PROBE(tcp, tcp_cong_state_set)
 }
 """
 
-# kprobe/kretprobe program (we add connect trace functions here)
-kprobe_program = r"""
+kprobe_program = """
 int entry_func(struct pt_regs *ctx, struct sock *sk)
 {
     return entry_state_update_func(sk);
@@ -400,118 +360,9 @@ int ret_func(struct pt_regs *ctx)
     SOCK_STORE_DEL
     return ret_state_update_func(sk);
 }
-
-/* ----- connect syscall entry/return to measure connect syscall latency ----- */
-int trace_connect_entry(struct pt_regs *ctx, struct sock *sk)
-{
-    u32 tid = bpf_get_current_pid_tgid();
-    currsock.update(&tid, &sk);
-    u64 ts = bpf_ktime_get_ns();
-    connect_start.update(&tid, &ts);
-    return 0;
-}
-
-int trace_connect_return(struct pt_regs *ctx)
-{
-    int ret = PT_REGS_RC(ctx);
-    u32 tid = bpf_get_current_pid_tgid();
-    struct sock **skpp = currsock.lookup(&tid);
-    u64 *tsp = connect_start.lookup(&tid);
-    if (skpp == 0 || tsp == 0) {
-        // missed entry or start ts
-        if (skpp) currsock.delete(&tid);
-        if (tsp) connect_start.delete(&tid);
-        return 0;
-    }
-
-    if (ret != 0) {
-        // connect failed, clean up
-        currsock.delete(&tid);
-        connect_start.delete(&tid);
-        return 0;
-    }
-
-    struct sock *sk = *skpp;
-    u64 now = bpf_ktime_get_ns();
-    u64 delta_ns = now - *tsp;
-    u64 delta_us = delta_ns / 1000;
-
-    // build IPv4/IPv6 key and add delta to open_dura
-    u16 family = 0;
-    bpf_probe_read_kernel(&family, sizeof(family), &sk->__sk_common.skc_family);
-    if (family == AF_INET) {
-        ipv4_flow_key_t key4 = {0};
-        bpf_probe_read_kernel(&key4.saddr, sizeof(key4.saddr),
-            &sk->__sk_common.skc_rcv_saddr);
-        bpf_probe_read_kernel(&key4.daddr, sizeof(key4.daddr),
-            &sk->__sk_common.skc_daddr);
-        u16 lport = 0;
-        bpf_probe_read_kernel(&lport, sizeof(lport),
-            &sk->__sk_common.skc_num);
-        key4.lport = lport;
-        u16 dport = 0;
-        bpf_probe_read_kernel(&dport, sizeof(dport),
-            &sk->__sk_common.skc_dport);
-        key4.dport = ntohs(dport);
-
-        data_val_t *datap = ipv4_stat.lookup(&key4);
-        if (datap) {
-            // Update timestamp but don't modify duration fields for connect latency
-            datap->last_ts = bpf_ktime_get_ns();
-        } else {
-            data_val_t zero = {0};
-            zero.last_ts = bpf_ktime_get_ns();
-            zero.last_cong_stat = 1;  // Assume initial state is Open
-            // Initialize all duration fields to 0
-            zero.open_dura = 0;
-            zero.loss_dura = 0;
-            zero.disorder_dura = 0;
-            zero.recover_dura = 0;
-            zero.cwr_dura = 0;
-            zero.total_changes = 0;
-            ipv4_stat.update(&key4, &zero);
-        }
-    } else if (family == AF_INET6) {
-        ipv6_flow_key_t key6 = {0};
-        bpf_probe_read_kernel(&key6.saddr, sizeof(key6.saddr),
-            &sk->__sk_common.skc_v6_rcv_saddr.in6_u.u6_addr32);
-        bpf_probe_read_kernel(&key6.daddr, sizeof(key6.daddr),
-            &sk->__sk_common.skc_v6_daddr.in6_u.u6_addr32);
-        u16 lport = 0;
-        bpf_probe_read_kernel(&lport, sizeof(lport),
-            &sk->__sk_common.skc_num);
-        key6.lport = lport;
-        u16 dport = 0;
-        bpf_probe_read_kernel(&dport, sizeof(dport),
-            &sk->__sk_common.skc_dport);
-        key6.dport = ntohs(dport);
-
-        data_val_t *datap = ipv6_stat.lookup(&key6);
-        if (datap) {
-            // Update timestamp but don't modify duration fields for connect latency
-            datap->last_ts = bpf_ktime_get_ns();
-        } else {
-            data_val_t zero = {0};
-            zero.last_ts = bpf_ktime_get_ns();
-            zero.last_cong_stat = 1;  // Assume initial state is Open
-            // Initialize all duration fields to 0
-            zero.open_dura = 0;
-            zero.loss_dura = 0;
-            zero.disorder_dura = 0;
-            zero.recover_dura = 0;
-            zero.cwr_dura = 0;
-            zero.total_changes = 0;
-            ipv6_stat.update(&key6, &zero);
-        }
-    }
-
-    currsock.delete(&tid);
-    connect_start.delete(&tid);
-    return 0;
-}
 """
 
-kfunc_program = r"""
+kfunc_program = """
 KFUNC_PROBE(tcp_fastretrans_alert, struct sock *sk)
 {
     return entry_state_update_func(sk);
@@ -563,8 +414,52 @@ KRETFUNC_PROBE(tcp_process_tlp_ack, struct sock *sk)
 }
 """
 
-# ---------- code replacement pieces ----------
-store_text = r"""
+# code replace
+is_support_tp_ca = BPF.tracepoint_exists("tcp", "tcp_cong_state_set")
+if is_support_tp_ca:
+    bpf_text = bpf_head_text + bpf_ca_tp_body_text
+else:
+    bpf_text = bpf_head_text + bpf_extra_head
+    bpf_text += bpf_no_ca_tp_body_text
+    is_support_kfunc = BPF.support_kfunc()
+    if is_support_kfunc:
+        bpf_text += kfunc_program
+        bpf_text = bpf_text.replace('SOCK_STORE_DEF', '')
+        bpf_text = bpf_text.replace('SOCK_STORE_ADD', '')
+        bpf_text = bpf_text.replace('SOCK_STORE_DEL', '')
+    else:
+        bpf_text += kprobe_program
+        bpf_text = bpf_text.replace('SOCK_STORE_DEF',
+                       'BPF_HASH(sock_store, process_key_t, struct sock *);')
+        bpf_text = bpf_text.replace('SOCK_STORE_ADD',
+                       'sock_store.update(&key, &sk);')
+        bpf_text = bpf_text.replace('SOCK_STORE_DEL',
+                       'sock_store.delete(&key);')
+
+if args.localport:
+    bpf_text = bpf_text.replace('FILTER_LPORT',
+        'if (lport < %d || lport > %d) { return 0; }'
+        % (start_lport, end_lport))
+else:
+    bpf_text = bpf_text.replace('FILTER_LPORT', '')
+
+if args.remoteport:
+    bpf_text = bpf_text.replace('FILTER_DPORT',
+        'if (dport < %d || dport > %d) { return 0; }'
+        % (start_rport, end_rport))
+else:
+    bpf_text = bpf_text.replace('FILTER_DPORT', '')
+
+table_def_text = """
+    u64  open_dura;
+    u64  loss_dura;
+    u64  disorder_dura;
+    u64  recover_dura;
+    u64  cwr_dura;
+    u64  total_changes;
+"""
+
+store_text = """
                 datap->total_changes += 1;
                 if (last_cong_state == (TCP_CA_Open + 1)) {
                     datap->open_dura += ts;
@@ -579,7 +474,7 @@ store_text = r"""
                 }
 """
 
-store_dist_text = r"""
+store_dist_text = """
                 if (last_cong_state == (TCP_CA_Open + 1)) {
                     key_s.state = TCP_CA_Open;
                 } else if (last_cong_state == (TCP_CA_Disorder + 1)) {
@@ -596,7 +491,7 @@ store_dist_text = r"""
                 dist.atomic_increment(key_s);
 """
 
-hist_table_text = r"""
+hist_table_text = """
 typedef struct congest_state_key {
     u32  state;
     u64  slot;
@@ -605,48 +500,8 @@ typedef struct congest_state_key {
 BPF_HISTOGRAM(dist, congest_state_key_t);
 """
 
-# Assemble bpf_text
-# choose tracepoint/no-tracepoint variant as in original
-is_support_tp_ca = BPF.tracepoint_exists("tcp", "tcp_cong_state_set")
-if is_support_tp_ca:
-    bpf_text = bpf_head_text + bpf_ca_tp_body_text
-else:
-    bpf_text = bpf_head_text + bpf_extra_head
-    bpf_text += bpf_no_ca_tp_body_text
-
-# add kfunc or kprobe implementations
-is_support_kfunc = BPF.support_kfunc()
-if is_support_kfunc:
-    bpf_text += kfunc_program
-    bpf_text = bpf_text.replace('SOCK_STORE_DEF', '')
-    bpf_text = bpf_text.replace('SOCK_STORE_ADD', '')
-    bpf_text = bpf_text.replace('SOCK_STORE_DEL', '')
-else:
-    bpf_text += kprobe_program
-    bpf_text = bpf_text.replace('SOCK_STORE_DEF',
-                   'BPF_HASH(sock_store, process_key_t, struct sock *);')
-    bpf_text = bpf_text.replace('SOCK_STORE_ADD',
-                   'sock_store.update(&key, &sk);')
-    bpf_text = bpf_text.replace('SOCK_STORE_DEL',
-                   'sock_store.delete(&key);')
-
-# filters
-if args.localport:
-    bpf_text = bpf_text.replace('FILTER_LPORT',
-        'if (lport < %d || lport > %d) { return 0; }'
-        % (start_lport, end_lport))
-else:
-    bpf_text = bpf_text.replace('FILTER_LPORT', '')
-
-if args.remoteport:
-    bpf_text = bpf_text.replace('FILTER_DPORT',
-        'if (dport < %d || dport > %d) { return 0; }'
-        % (start_rport, end_rport))
-else:
-    bpf_text = bpf_text.replace('FILTER_DPORT', '')
-
-# histogram or not
 if args.dist:
+    bpf_text = bpf_text.replace('DEF_TEXT', '')
     bpf_text = bpf_text.replace('STORE', store_dist_text)
     bpf_text = bpf_text.replace('STATE_KEY',
         'congest_state_key_t key_s = {0};')
@@ -656,9 +511,11 @@ if args.dist:
     else:
         bpf_text = bpf_text.replace('TIME_UNIT', 'ts /= 1000;')
 else:
+    bpf_text = bpf_text.replace('DEF_TEXT', table_def_text)
     bpf_text = bpf_text.replace('STORE', store_text)
     bpf_text = bpf_text.replace('STATE_KEY', '')
     bpf_text = bpf_text.replace('HIST_TABLE', '')
+
 
 if debug or args.ebpf:
     print(bpf_text)
@@ -668,7 +525,6 @@ if debug or args.ebpf:
 # load BPF program
 b = BPF(text=bpf_text)
 
-# attach the congestion-related kprobes (only if not using tracepoint/kfunc)
 if not is_support_tp_ca and not is_support_kfunc:
     # all the tcp congestion control status update functions
     # are called by below 5 functions.
@@ -683,29 +539,15 @@ if not is_support_tp_ca and not is_support_kfunc:
     b.attach_kprobe(event="tcp_enter_recovery", fn_name="entry_func")
     b.attach_kretprobe(event="tcp_enter_recovery", fn_name="ret_func")
 
-# attach connect entry/return probes (best-effort: if symbol missing, ignore)
-# tcp_v4_connect / tcp_v6_connect are typical kernel symbols for connect path
-try:
-    b.attach_kprobe(event="tcp_v4_connect", fn_name="trace_connect_entry")
-    b.attach_kretprobe(event="tcp_v4_connect", fn_name="trace_connect_return")
-except Exception:
-    # symbol not present on this kernel, ignore
-    pass
-
-try:
-    b.attach_kprobe(event="tcp_v6_connect", fn_name="trace_connect_entry")
-    b.attach_kretprobe(event="tcp_v6_connect", fn_name="trace_connect_return")
-except Exception:
-    pass
-
 print("Tracing tcp congestion control status duration... Hit Ctrl-C to end.")
+
 
 def cong_state_to_name(state):
     # this need to match with kernel state
     state_name = ["open", "disorder", "cwr", "recovery", "loss"]
     return state_name[state]
 
-# output loop
+# output
 exiting = 0 if args.interval else 1
 ipv6_stat = b.get_table("ipv6_stat")
 ipv4_stat = b.get_table("ipv4_stat")
@@ -714,7 +556,6 @@ if args.dist:
 label = "ms"
 if args.microseconds:
     label = "us"
-
 while (1):
     try:
         sleep(int(args.interval))
@@ -733,12 +574,10 @@ while (1):
                 section_print_fn=cong_state_to_name)
         dist.clear()
     else:
-        # header + per-connection printing (ipv4)
         if ipv4_stat:
             print("%-21s% -21s %-7s %-6s %-7s %-7s %-6s %-5s" % ("LAddrPort",
                 "RAddrPort", "Open_" + label, "Dod_" + label,
                 "Rcov_" + label, "Cwr_" + label, "Los_" + label, "Chgs"))
-        entries = []
         laddr = ""
         raddr = ""
         for k, v in sorted(ipv4_stat.items(), key=lambda ipv4_stat: ipv4_stat[0].lport):
@@ -760,16 +599,6 @@ while (1):
                     "/" + str(k.lport), raddr + "/" + str(k.dport), open_dura,
                     disorder_dura, recover_dura, cwr_dura, loss_dura,
                     v.total_changes))
-                entries.append({
-                    "open": float(open_dura),
-                    "loss": float(loss_dura),
-                    "cwr": float(cwr_dura),
-                    "recover": float(recover_dura),
-                    "disorder": float(disorder_dura),
-                    "changes": float(v.total_changes)
-                })
-
-        # ipv6 printing (if any)
         if ipv6_stat:
             print("%-32s %-32s %-7s %-6s %-7s %-7s %-6s %-5s" % ("LAddrPort6",
                 "RAddrPort6", "Open_" + label, "Dod_" + label, "Rcov_" + label,
@@ -793,44 +622,6 @@ while (1):
                     "/" + str(k.lport), raddr + "/" + str(k.dport), open_dura,
                     disorder_dura, recover_dura, cwr_dura, loss_dura,
                     v.total_changes))
-                entries.append({
-                    "open": float(open_dura),
-                    "loss": float(loss_dura),
-                    "cwr": float(cwr_dura),
-                    "recover": float(recover_dura),
-                    "disorder": float(disorder_dura),
-                    "changes": float(v.total_changes)
-                })
-
-        # ---- summary computations ----
-        total_conns = len(entries)
-        if total_conns == 0:
-            print("\nNo TCP connections with state changes observed in this interval.")
-        else:
-            sum_open = sum(e["open"] for e in entries)
-            sum_loss = sum(e["loss"] for e in entries)
-            sum_cwr  = sum(e["cwr"]  for e in entries)
-            sum_recover = sum(e["recover"] for e in entries)
-            sum_disorder = sum(e["disorder"] for e in entries)
-            sum_changes = sum(e["changes"] for e in entries)
-
-            avg_open = sum_open / total_conns
-            avg_loss = sum_loss / total_conns
-            avg_cwr  = sum_cwr / total_conns
-            avg_recover = sum_recover / total_conns
-            avg_disorder = sum_disorder / total_conns
-            avg_changes = sum_changes / total_conns
-
-            print("\nSummary (this interval):")
-            print("  Total connections observed: %d" % total_conns)
-            print("  Avg Open:     %.2f %s" % (avg_open, label))
-            print("  Avg Loss:     %.2f %s" % (avg_loss, label))
-            print("  Avg CWR:      %.2f %s" % (avg_cwr, label))
-            print("  Avg Recover:  %.2f %s" % (avg_recover, label))
-            print("  Avg Disorder: %.2f %s" % (avg_disorder, label))
-            print("  Avg Changes:  %.2f (state changes per connection)\n" % (avg_changes))
-
-    # clear maps and loop
     ipv4_stat.clear()
     ipv6_stat.clear()
     countdown -= 1
