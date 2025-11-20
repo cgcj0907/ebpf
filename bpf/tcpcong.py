@@ -859,10 +859,10 @@ while (1):
             timestamp = time.strftime("%a %b %d %H:%M:%S %Y", time.localtime())
             
             # 构造一行 message（直接写成 key=value 形式）
-            message = ('@timestamp="{ts}" level=info msg="TCP congestion summary" '
-                       'AvgOpen={avg_open:.2f}{unit} AvgLoss={avg_loss:.2f}{unit} '
-                       'AvgCWR={avg_cwr:.2f}{unit} AvgRecover={avg_recover:.2f}{unit} '
-                       'AvgDisorder={avg_disorder:.2f}{unit} AvgChanges={avg_changes:.2f} '
+            message = ('timestamp="{ts}" level=info msg="TCP congestion summary" '
+                       'AvgOpen={avg_open:.2f} AvgLoss={avg_loss:.2f} '
+                       'AvgCWR={avg_cwr:.2f} AvgRecover={avg_recover:.2f} '
+                       'AvgDisorder={avg_disorder:.2f} AvgChanges={avg_changes:.2f} '
                        'connections={conns}').format(
                            ts=timestamp,
                            avg_open=avg_open, avg_loss=avg_loss, avg_cwr=avg_cwr,
