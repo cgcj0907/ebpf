@@ -856,7 +856,7 @@ while (1):
             
             # --- 构造 message 字段（同你给的样式） ---
             # 时间戳格式可以按需修改，这里使用本地时间字符串
-            timestamp = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+            timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             
             # 构造一行 message（直接写成 key=value 形式）
             message = ('timestamp="{ts}" level=info msg="TCP congestion summary" '
