@@ -879,7 +879,23 @@ while (1):
                     fh.write(message + "\n")
             except Exception as e:
                 print("Failed to write summary to %s: %s" % (OUTFILE, e))
-
+            OUT_URL = "http://127.0.0.1:9000"
+            metrics = {
+                "timestamp": timestamp,
+                "metrics": [
+                    {"name": "tcp_avg_open",    "value": avg_open,    "unit": "packets"},
+                    {"name": "tcp_avg_loss",    "value": avg_loss,    "unit": "packets"},
+                    {"name": "tcp_avg_cwr",     "value": avg_cwr,     "unit": "packets"},
+                    {"name": "tcp_avg_recover", "value": avg_recover, "unit": "packets"},
+                    {"name": "tcp_avg_disorder","value": avg_disorder,"unit": "packets"},
+                    {"name": "tcp_avg_changes", "value": avg_changes, "unit": "packets"},
+                    {"name": "tcp_connections", "value": total_conns, "unit": "connections"}
+                ]
+            }
+            try:
+                requests.post(OUT_URL, json=metrics, timeout=2)
+            except Exception as e:
+                print(f"Failed to send metrics: {e}")
 
     # clear maps and loop
     ipv4_stat.clear()
