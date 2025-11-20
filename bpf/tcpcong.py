@@ -829,6 +829,61 @@ while (1):
             print("  Avg Recover:  %.2f %s" % (avg_recover, label))
             print("  Avg Disorder: %.2f %s" % (avg_disorder, label))
             print("  Avg Changes:  %.2f (state changes per connection)\n" % (avg_changes))
+            import json
+            from datetime import datetime
+            import time
+            
+            # --- 配置：输出文件（每条记录为一行 JSON） ---
+            # 改为你想要的路径，如 '/var/log/tcpcong_summary.jsonl'（注意权限）
+            OUTFILE = "../logs/tcpcong.log"
+            
+            # ---------- 在计算完 avg_* 之后，替换原有的 summary 打印部分 ----------
+            # 原来位置（示例）：
+            # print("\nSummary (this interval):")
+            # print("  Total connections observed: %d" % total_conns)
+            # ...
+            #
+            # 用下面代码替换该块：
+            
+            print("\nSummary (this interval):")
+            print("  Total connections observed: %d" % total_conns)
+            print("  Avg Open:     %.2f %s" % (avg_open, label))
+            print("  Avg Loss:     %.2f %s" % (avg_loss, label))
+            print("  Avg CWR:      %.2f %s" % (avg_cwr, label))
+            print("  Avg Recover:  %.2f %s" % (avg_recover, label))
+            print("  Avg Disorder: %.2f %s" % (avg_disorder, label))
+            print("  Avg Changes:  %.2f (state changes per connection)\n" % (avg_changes))
+            
+            # --- 构造 message 字段（同你给的样式） ---
+            # 时间戳格式可以按需修改，这里使用本地时间字符串
+            timestamp = time.strftime("%a %b %d %H:%M:%S %Y", time.localtime())
+            
+            # 构造一行 message（你可以自行调整字段和格式）
+            message = ('@timestamp="{ts}" level=info msg="TCP congestion summary" '
+                       'AvgOpen={avg_open:.2f}{unit} AvgLoss={avg_loss:.2f}{unit} '
+                       'AvgCWR={avg_cwr:.2f}{unit} AvgRecover={avg_recover:.2f}{unit} '
+                       'AvgDisorder={avg_disorder:.2f}{unit} AvgChanges={avg_changes:.2f} '
+                       '(connections={conns})').format(
+                           ts=timestamp,
+                           avg_open=avg_open, avg_loss=avg_loss, avg_cwr=avg_cwr,
+                           avg_recover=avg_recover, avg_disorder=avg_disorder,
+                           avg_changes=avg_changes, conns=total_conns, unit=label)
+            
+            # 包装成你要求的键值对结构
+            record = {
+                "log": {
+                    "message": message
+                }
+            }
+            
+            # 以追加模式写入 OUTFILE，每次写一行 JSON（方便 later grep / jq / vector 采集）
+            try:
+                with open(OUTFILE, "a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+            except Exception as e:
+                # 写文件失败时打印错误（常见原因：权限问题）
+                print("Failed to write summary to %s: %s" % (OUTFILE, e))
+
 
     # clear maps and loop
     ipv4_stat.clear()
