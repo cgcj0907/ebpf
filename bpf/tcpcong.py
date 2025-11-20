@@ -863,7 +863,7 @@ while (1):
                        'AvgOpen={avg_open:.2f}{unit} AvgLoss={avg_loss:.2f}{unit} '
                        'AvgCWR={avg_cwr:.2f}{unit} AvgRecover={avg_recover:.2f}{unit} '
                        'AvgDisorder={avg_disorder:.2f}{unit} AvgChanges={avg_changes:.2f} '
-                       '(connections={conns})').format(
+                       'connections={conns}').format(
                            ts=timestamp,
                            avg_open=avg_open, avg_loss=avg_loss, avg_cwr=avg_cwr,
                            avg_recover=avg_recover, avg_disorder=avg_disorder,
