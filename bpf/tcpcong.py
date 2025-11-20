@@ -858,7 +858,7 @@ while (1):
             # 时间戳格式可以按需修改，这里使用本地时间字符串
             timestamp = time.strftime("%a %b %d %H:%M:%S %Y", time.localtime())
             
-            # 构造一行 message（你可以自行调整字段和格式）
+            # 构造一行 message（直接写成 key=value 形式）
             message = ('@timestamp="{ts}" level=info msg="TCP congestion summary" '
                        'AvgOpen={avg_open:.2f}{unit} AvgLoss={avg_loss:.2f}{unit} '
                        'AvgCWR={avg_cwr:.2f}{unit} AvgRecover={avg_recover:.2f}{unit} '
@@ -869,19 +869,11 @@ while (1):
                            avg_recover=avg_recover, avg_disorder=avg_disorder,
                            avg_changes=avg_changes, conns=total_conns, unit=label)
             
-            # 包装成你要求的键值对结构
-            record = {
-                "log": {
-                    "message": message
-                }
-            }
-            
-            # 以追加模式写入 OUTFILE，每次写一行 JSON（方便 later grep / jq / vector 采集）
+            # 直接写入文件，不再封装 JSON
             try:
                 with open(OUTFILE, "a", encoding="utf-8") as fh:
-                    fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+                    fh.write(message + "\n")
             except Exception as e:
-                # 写文件失败时打印错误（常见原因：权限问题）
                 print("Failed to write summary to %s: %s" % (OUTFILE, e))
 
 
