@@ -830,7 +830,7 @@ while (1):
             print("  Avg Disorder: %.2f %s" % (avg_disorder, label))
             print("  Avg Changes:  %.2f (state changes per connection)\n" % (avg_changes))
             import json
-            from datetime import datetime, timezone
+            from datetime import datetime, timezone, timedelta
             import time
             
             # --- 配置：输出文件（每条记录为一行 JSON） ---
@@ -854,10 +854,14 @@ while (1):
             print("  Avg Disorder: %.2f %s" % (avg_disorder, label))
             print("  Avg Changes:  %.2f (state changes per connection)\n" % (avg_changes))
             
-            # --- 构造 message 字段（同你给的样式） ---
+ 
             # 时间戳格式可以按需修改，这里使用本地时间字符串
-            timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+            # 定义北京时间时区
+            CST = timezone(timedelta(hours=8))
             
+            # 获取当前北京时间
+            timestamp = datetime.now(CST).strftime("%Y-%m-%d %H:%M:%S")
+                        
             # 构造一行 message（直接写成 key=value 形式）
             message = ('timestamp="{ts}" level=info msg="TCP congestion summary" '
                        'AvgOpen={avg_open:.2f} AvgLoss={avg_loss:.2f} '
