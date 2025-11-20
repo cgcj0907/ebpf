@@ -830,7 +830,7 @@ while (1):
             print("  Avg Disorder: %.2f %s" % (avg_disorder, label))
             print("  Avg Changes:  %.2f (state changes per connection)\n" % (avg_changes))
             import json
-            from datetime import datetime
+            from datetime import datetime, timezone
             import time
             
             # --- 配置：输出文件（每条记录为一行 JSON） ---
